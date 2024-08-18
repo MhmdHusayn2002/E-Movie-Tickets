@@ -1,0 +1,72 @@
+﻿@model List<Order>
+
+@{ 
+    ViewData["Title"] = "All orders";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-2">
+        <p>
+            <h4>List of all your orders</h4>
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="text-align: center">Order ID</th>
+                    <th style="text-align: center">Movie</th>
+                    <th style="text-align: center">Cinema</th>
+                    <th style="text-align: center">Order Date</th>
+                    <th style="text-align: center">Movie Date</th>
+                    <th style="text-align: center">Show Time</th>
+                    <th style="text-align: center">Total</th>
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <th class="align-middle">User</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                <tr>
+                    <td class="align-middle">@order.Id</td>
+                    @foreach (var item in order.OrderItems)
+                    {
+                        <td class="align-middle">
+                            <ul style="list-style-type:none">
+                                
+                               <li>
+                                   <div class="alert alert-info" role="alert">
+                                       <span class="badge bg-success">@item.Amount</span> [@item.Price.ToString("c")] - @item.Movie.Name
+                                   </div>
+                               </li>
+                    
+                            </ul>
+                        </td>
+                        <td class="align-middle">
+                            @item.Movie.Cinema.Name
+                        </td>
+                    }
+                    <td class="align-middle">@order.OrderDate.ToString("dd MMM yy")</td>
+                    <td class="align-middle">@order.MovieDate.ToString("dd MMM yy")</td>
+                    <td class="align-middle">
+                        @foreach (var item in order.OrderItems)
+                        {
+                            @item.Movie.ShowTime.ToString("HH:mm")
+                        }
+                    </td>
+                    <td class="align-middle">
+                        @order.OrderItems.Select(m => m.Movie.Price * m.Amount).Sum().ToString("c")
+                    </td>
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <td class="align-middle"> @order.User.FullName </td>
+                    }
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
